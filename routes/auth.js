@@ -42,8 +42,18 @@ router.post('/login', async (req,res) => {
         const inputPassword = req.body.password;
         passwordInDB !== inputPassword && res.status(401).json("Wrong password!");
         
-        const {password, ...others} = user;
-        res.status(200).json(user);
+        //this token make sure only the admin can modify or delete the user
+        const accessToken = jwt.sign(
+            {
+                id: user._id,
+                isAdmin: user.isAdmin,
+            }, process.env.JWT_SEC,
+            {expiresIn: "3d"}
+        );
+        
+        //to hide the password in success info from MongoDB
+        const {password, ...others} = user._doc;
+        res.status(200).json({...others,accessToken});
     }
     catch(err){
         res.status(500).json(err);
