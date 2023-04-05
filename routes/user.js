@@ -1,5 +1,11 @@
-const express = require("express").Router();
+const router = require("express").Router();
 
-router.put("./:id",async (req,res) =>{
+
+//get user
+router.put("./find/:id",async (req,res) =>{
     
 })
+
+//get all user
+
+module.exports = router;
