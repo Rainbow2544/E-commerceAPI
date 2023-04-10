@@ -30,6 +30,15 @@ router.put("/:id",verifyTokenAndAuthorization, async (req,res) =>{
     }
 });
 
+//delete
+router.delete("/:id",verifyTokenAndAuthorization, async (req,res) =>{
+    try{
+        await User.findByIdAndDelete(req.params.id);
+        res.status(200).json("user has been deleted successful!");
+    }catch(err){
+        res.status(500).json(err);
+    }
+});
 
 //get user
 router.put("/find/:id",verifyTokenAndAdmin, async (req,res) =>{
@@ -43,5 +52,44 @@ router.put("/find/:id",verifyTokenAndAdmin, async (req,res) =>{
 })
 
 //get all user
+router.get("/", verifyTokenAndAdmin, async (req, res) => {
+    const query = req.query.new;
+    const mysort = { _id: -1 };//to sort user id in desc order
+    try {
+      const users = query
+        ? await User.find().sort(mysort).limit(5)
+        : await User.find();
+      res.status(200).json(users);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+
+  //get user stats
+  router.get("/stats", verifyTokenAndAdmin, async (req,res) =>{
+    const date = new Date();
+    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
+    try {
+        const data = await User.aggregate([
+          { $match: { createdAt: { $gte: lastYear } } },
+          {
+            $project: {
+              month: { $month: "$createdAt" },
+            },
+          },
+          {
+            $group: {
+              _id: "$month",
+              total: { $sum: 1 },
+            },
+          },
+        ]);
+          
+        res.status(200).json(data);
+      } catch (err) {
+        res.status(500).json(err);
+      }
+  });
 
 module.exports = router;
