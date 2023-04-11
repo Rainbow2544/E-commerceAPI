@@ -8,27 +8,27 @@ const {
 
 
 //update
-router.put("/:id",verifyTokenAndAuthorization, async (req,res) =>{
-    if(req.body.password){
-        req.body.password = CryptoJS.AES.encrypt(
-            req.body.password,
-            process.env.PASS_SEC
-          ).toString();
+router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
+    if (req.body.password) {
+      req.body.password = CryptoJS.AES.encrypt(
+        req.body.password,
+        process.env.PASS_SEC
+      ).toString();
     }
-
-    try{
-        const updateUser = await User.findByIdAndUpdate(
-            req.params.id, 
-            {
-                $set: req.body,
-            },
-            {new: true}
-        );
-        res.status(200).json(updateUser);
-    }catch(err) {
-        res.status(500).json(err);
+  
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: req.body,
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedUser);
+    } catch (err) {
+      res.status(500).json(err);
     }
-});
+  });
 
 //delete
 router.delete("/:id",verifyTokenAndAuthorization, async (req,res) =>{
@@ -41,7 +41,7 @@ router.delete("/:id",verifyTokenAndAuthorization, async (req,res) =>{
 });
 
 //get user
-router.put("/find/:id",verifyTokenAndAdmin, async (req,res) =>{
+router.get("/find/:id",verifyTokenAndAdmin, async (req,res) =>{
     try {
         const user = await User.findById(req.params.id);
         const { password, ...others } = user._doc;
@@ -72,6 +72,7 @@ router.get("/", verifyTokenAndAdmin, async (req, res) => {
 
     try {
         const data = await User.aggregate([
+            //$gte means great than 
           { $match: { createdAt: { $gte: lastYear } } },
           {
             $project: {
