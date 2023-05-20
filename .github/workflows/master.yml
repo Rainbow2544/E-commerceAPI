@@ -9,7 +9,7 @@ on:
             - master
 
 env:
-    AZURE_WEBAPP_NAME: ts-demo-api
+    AZURE_WEBAPP_NAME: ts-demo
     AZURE_WEBAPP_PATH: '.'
     DOTNET_VERSION: '2.2.101'
     NODE_VERSION: 18
