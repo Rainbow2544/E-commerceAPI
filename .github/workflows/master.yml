@@ -34,6 +34,9 @@ jobs:
 
             - name: Install dependencies
               run: npm install
+
+            - name: Run your command with MONGODB_URI
+              run: echo ${{ secrets.MONGO_URL }}
             
             - name: Run start
               run: npm start
@@ -42,3 +45,4 @@ jobs:
               uses: azure/webapps-deploy@v2
               with:
                 app-name: ${{ env.AZURE_WEBAPP_NAME}}
+                package: ${{env.AZURE_WEBAPP_PATH}}
