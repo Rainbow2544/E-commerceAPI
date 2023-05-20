@@ -1,0 +1,47 @@
+name: Deploy NODE.JS CORE
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+
+env:
+    AZURE_WEBAPP_NAME: ts-demo-api
+    AZURE_WEBAPP_PATH: '.'
+    DOTNET_VERSION: '2.2.101'
+    NODE_VERSION: 18
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Login via Azure CLI
+              uses: azure/login@v1
+              with:
+                creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                node-version: ${{ env.NODE_VERSION}}
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build
+              run: npm run build
+            
+            - name: Run dev
+              run: npm run dev
+
+            - name: Deploy to App Service
+              uses: azure/webapps-deploy@v2
+              with:
+                app-name: ${{ env.AZURE_WEBAPP_NAME}}
